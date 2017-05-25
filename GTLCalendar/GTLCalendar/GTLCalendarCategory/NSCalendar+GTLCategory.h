@@ -46,4 +46,9 @@
  */
 + (NSInteger)numberOfDaysWithFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate;
 
+/**
+ * 判斷日期是否在兩個日期之間
+ */
++ (BOOL)isOnRangeFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate date:(NSDate *)date;
+
 @end

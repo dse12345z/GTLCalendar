@@ -48,7 +48,7 @@
     GTLCalendarView *gtlCalendarView = [[GTLCalendarView alloc] initWithFrame:frame];
     gtlCalendarView.dataSource = self;
     gtlCalendarView.delegate = self;
-    gtlCalendarView.rangeDays = 30;
+    gtlCalendarView.rangeDays = 30 * 6;
     [self.view addSubview:gtlCalendarView];
 }
 

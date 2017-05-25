@@ -40,6 +40,8 @@
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     GTLCalendarCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"GTLCalendarCell" forIndexPath:indexPath];
+    cell.backgroundColor = [UIColor clearColor];
+    
     // 依照 section index 計算日期
     NSDate *fromDate = [self.dataSource minimumDateForGTLCalendar];
     NSDate *sectionDate = [NSCalendar date:fromDate addMonth:indexPath.section];
@@ -59,6 +61,33 @@
             shiftIndex -= containPreDays;
             cell.dayLabel.text = [NSString stringWithFormat:@"%td", shiftIndex + 1];
             cell.dayLabel.textColor = dayTexTColor;
+            
+            // 轉日期格式 yyyy年MM月
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+            dateFormatter.dateFormat = @"yyyy年MM月";
+            
+            NSString *dateString = [dateFormatter stringFromDate:sectionDate];
+            dateString = [NSString stringWithFormat:@"%@%02ld日", dateString, (long)shiftIndex + 1];
+            
+            dateFormatter.dateFormat = @"yyyy年MM月dd日";
+            NSDate *date = [dateFormatter dateFromString:dateString];
+            BOOL isOnRangeDate = [NSCalendar isOnRangeFromDate:self.selectFromDate toDate:self.selectToDate date:date];
+            if (isOnRangeDate) {
+                cell.backgroundColor = [UIColor redColor];
+            }
+            
+            if ([[dateFormatter stringFromDate:self.selectFromDate] isEqualToString:[dateFormatter stringFromDate:date]] ||
+                [[dateFormatter stringFromDate:self.selectToDate] isEqualToString:[dateFormatter stringFromDate:date]]) {
+                cell.backgroundColor = [UIColor redColor];
+            }
+            
+            // 選擇第一個日期，則把大於 rangeDays 的日期關閉
+            if (self.selectFromDate && !self.selectToDate) {
+                NSInteger days = [NSCalendar daysFromDate:self.selectFromDate toDate:date];
+                if (labs(days) > self.rangeDays) {
+                    cell.dayLabel.textColor = dayOutTexTColor;
+                }
+            }
             
             // 最大日期
             if (indexPath.section == self.sectionRows.count - 1) {
@@ -130,6 +159,7 @@
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         dateFormatter.dateFormat = @"yyyy年MM月";
         
+        // 轉日期格式 yyyy年MM月dd日
         NSString *dateString = [dateFormatter stringFromDate:sectionDate];
         dateString = [NSString stringWithFormat:@"%@%02ld日", dateString, (long)shiftIndex + 1];
         
@@ -151,8 +181,8 @@
                     self.selectToDate = self.selectFromDate;
                     self.selectFromDate = date;
                 }
-                else {
-                    // 超過選取範圍或是起始與結束都在同一天
+                else if (days == 0) {
+                    self.selectFromDate = nil;
                 }
             }
         }
@@ -161,6 +191,7 @@
             self.selectFromDate = [dateFormatter dateFromString:dateString];
         }
         [self.delegate selectFromDate:self.selectFromDate toDate:self.selectToDate];
+        [self.collectionView reloadData];
     }
 }
 

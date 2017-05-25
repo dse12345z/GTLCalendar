@@ -59,4 +59,10 @@
     return components.day;
 }
 
++ (BOOL)isOnRangeFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate date:(NSDate *)date {
+    NSDateFormatter * dateFormatter = [[NSDateFormatter alloc]init];
+    dateFormatter.dateFormat = @"yyyy年MM月dd日";
+    return [date compare:fromDate] != NSOrderedAscending && [date compare:toDate] == NSOrderedAscending;
+}
+
 @end
