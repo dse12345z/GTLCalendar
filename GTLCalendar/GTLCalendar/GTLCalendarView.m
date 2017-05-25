@@ -150,7 +150,6 @@
     flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     flowLayout.sectionRows = self.sectionRows;
     
-    
     self.collectionView = [[UICollectionView alloc] initWithFrame:collectionViewFrame collectionViewLayout:flowLayout];
     self.collectionView.dataSource = self;
     self.collectionView.delegate = self;
@@ -158,6 +157,10 @@
     [self.collectionView registerClass:[GTLCalendarCell class] forCellWithReuseIdentifier:@"GTLCalendarCell"];
     [self.collectionView registerClass:[GTLCalendarHeaderReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"GTLCalendarHeaderReusableView"];
     [self addSubview:self.collectionView];
+    
+    // 移動到當天月份
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:self.months - 1];
+    [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionTop animated:NO];
 }
 
 #pragma mark * misc
