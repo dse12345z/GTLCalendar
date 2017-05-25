@@ -36,10 +36,16 @@
 + (NSDate *)date:(NSDate *)fromDate addMonth:(NSInteger)month;
 
 /**
- * 計算日期「x月 1日」是星期幾
+ * 計算日期是星期幾
  * 0:星期一, 1:星期二, 2:星期三, 3:星期四, 4:星期五, 5:星期六, 6:星期日
  */
 + (NSInteger)weekFromDate:(NSDate *)fromDate;
+
+/**
+ * 計算日期「x月 1日」是星期幾
+ * 0:星期一, 1:星期二, 2:星期三, 3:星期四, 4:星期五, 5:星期六, 6:星期日
+ */
++ (NSInteger)weekFromMonthFirstDate:(NSDate *)fromDate;
 
 /**
  * 計算兩個日期之間的天數

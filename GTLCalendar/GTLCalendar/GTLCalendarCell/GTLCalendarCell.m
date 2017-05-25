@@ -11,54 +11,82 @@
 @interface GTLCalendarCell ()
 
 @property (weak, nonatomic) CAShapeLayer *shapeLayer;
+@property (weak, nonatomic) CAShapeLayer *fromDateShapeLayer;
+@property (weak, nonatomic) CAShapeLayer *toDateshapeLayer;
 
 @end
 
 @implementation GTLCalendarCell
-@synthesize shapeLayerType = _shapeLayerType;
+@synthesize isFromDate = _isFromDate;
+@synthesize isToDate = _isToDate;
 
 #pragma mark - instance method
 
 #pragma mark * properties
 
-- (void)setShapeLayerType:(ShapeLayerType)shapeLayerType {
-    _shapeLayerType = shapeLayerType;
+- (void)setIsFromDate:(BOOL)isFromDate {
+    _isFromDate = isFromDate;
+    [self.fromDateShapeLayer removeFromSuperlayer];
+    self.fromDateShapeLayer = nil;
     
-    // 做清除動作
-    if (self.shapeLayer) {
-        [self.shapeLayer removeFromSuperlayer];
-        self.shapeLayer  = nil;
-    }
-    
-    switch (shapeLayerType) {
-        case ShapeLayerTypeNon:
-            break;
-            
-        case ShapeLayerTypeLeft:
-            break;
-            
-        case ShapeLayerTypeCenter:
-            break;
-            
-        case ShapeLayerTypeRight:
-            break;
+    if (isFromDate) {
+        CGRect rect = CGRectMake(0, 0, 30, 30);
+        UIRectCorner rectCorner = UIRectCornerAllCorners;
+        CGSize cornerRadii = CGSizeMake(15, 15);
+        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:rect byRoundingCorners:rectCorner cornerRadii:cornerRadii];
+        
+        CAShapeLayer *shapeLayer = [CAShapeLayer layer];
+        shapeLayer.path = path.CGPath;
+        shapeLayer.fillColor = [UIColor colorWithRed:245.0/255.0 green:162.0/255.0 blue:27.0/255.0 alpha:1].CGColor;
+        if (self.shapeLayer) {
+            [self.contentView.layer insertSublayer:shapeLayer above:self.shapeLayer];
+        }
+        else {
+            [self.contentView.layer insertSublayer:shapeLayer below:self.dayLabel.layer];
+        }
+        
+        self.fromDateShapeLayer = shapeLayer;
     }
 }
 
-#pragma mark - private instance method
+- (void)setIsToDate:(BOOL)isToDate {
+    _isToDate = isToDate;
+    [self.toDateshapeLayer removeFromSuperlayer];
+    self.toDateshapeLayer = nil;
+    
+    if (isToDate) {
+        CGRect rect = CGRectMake(0, 0, 30, 30);
+        UIRectCorner rectCorner = UIRectCornerAllCorners;
+        CGSize cornerRadii = CGSizeMake(15, 15);
+        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:rect byRoundingCorners:rectCorner cornerRadii:cornerRadii];
+        
+        CAShapeLayer *shapeLayer = [CAShapeLayer layer];
+        shapeLayer.path = path.CGPath;
+        shapeLayer.fillColor = [UIColor colorWithRed:233.0/255.0 green:97.0/255.0 blue:75.0/255.0 alpha:1].CGColor;
+        if (self.shapeLayer) {
+            [self.contentView.layer insertSublayer:shapeLayer above:self.shapeLayer];
+        }
+        else {
+            [self.contentView.layer insertSublayer:shapeLayer below:self.dayLabel.layer];
+        }
+        self.toDateshapeLayer = shapeLayer;
+    }
+}
 
-#pragma mark * init values
+#pragma mark * misc
 
-//- (void)setupShapeLayers {
-//    CAShapeLayer *shapeLayer;
-//    shapeLayer = [CAShapeLayer layer];
-//    shapeLayer.backgroundColor = [UIColor clearColor].CGColor;
-//    shapeLayer.borderWidth = 1.0;
-//    shapeLayer.borderColor = [UIColor clearColor].CGColor;
-//    shapeLayer.opacity = 0;
-//    [self.contentView.layer insertSublayer:shapeLayer below:self.dayLabel.layer];
-//    self.shapeLayer = shapeLayer;
-//}
+- (UICollectionView *)dependCollectionView {
+    UIView *findView = self.superview;
+    while (![findView isKindOfClass:[UICollectionView class]]) {
+        findView = findView.superview;
+    }
+    UICollectionView *collectionView = (UICollectionView *)findView;
+    return collectionView;
+}
+
+- (NSIndexPath *)indexPath {
+    return [[self dependCollectionView] indexPathForCell:self];
+}
 
 #pragma mark - life cycle
 

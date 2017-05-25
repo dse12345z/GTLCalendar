@@ -7,19 +7,21 @@
 //
 
 #import "GTLCalendarView.h"
+#import "GTLGradientView.h"
 #import "GTLCalendarCell.h"
 #import "GTLCalendarHeaderReusableView.h"
 #import "GTLCalendarCollectionViewFlowLayout.h"
 #import "NSCalendar+GTLCategory.h"
 
-#define itemTexTColor [UIColor colorWithRed:149.0/255.0 green:149.0/255.0 blue:149.0/255.0 alpha:1];
-#define dayTexTColor [UIColor colorWithRed:65.0/255.0 green:65.0/255.0 blue:65.0/255.0 alpha:1];
-#define dayOutTexTColor [UIColor colorWithRed:65.0/255.0 green:65.0/255.0 blue:65.0/255.0 alpha:0.3];
+#define itemTexTColor [UIColor colorWithRed:149.0/255.0 green:149.0/255.0 blue:149.0/255.0 alpha:1]
+#define dayTexTColor [UIColor colorWithRed:65.0/255.0 green:65.0/255.0 blue:65.0/255.0 alpha:1]
+#define dayOutTexTColor [UIColor colorWithRed:65.0/255.0 green:65.0/255.0 blue:65.0/255.0 alpha:0.3]
 
 @interface GTLCalendarView () <UICollectionViewDataSource, UICollectionViewDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) NSMutableArray *sectionRows;
+@property (strong, nonatomic) NSMutableDictionary *gradientViewInfos;
 @property (strong, nonatomic) NSDate *selectFromDate;
 @property (strong, nonatomic) NSDate *selectToDate;
 @property (assign, nonatomic) NSInteger months;
@@ -41,14 +43,18 @@
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     GTLCalendarCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"GTLCalendarCell" forIndexPath:indexPath];
     cell.backgroundColor = [UIColor clearColor];
+    cell.isFromDate = NO;
+    cell.isToDate = NO;
     
     // 依照 section index 計算日期
     NSDate *fromDate = [self.dataSource minimumDateForGTLCalendar];
     NSDate *sectionDate = [NSCalendar date:fromDate addMonth:indexPath.section];
     
+    NSDateFormatter * dateFormatter = [[NSDateFormatter alloc]init];
+    dateFormatter.dateFormat = @"yyyy年MM月dd日";
+    
     // 包含前一個月天數
-    NSInteger sectionDateWeek = [NSCalendar weekFromDate:sectionDate];
-    NSInteger containPreDays = (sectionDateWeek == 6) ? 0 : sectionDateWeek;
+    NSInteger containPreDays = [NSCalendar weekFromMonthFirstDate:sectionDate];
     
     // 一、二、三 ... 日，7 個項目
     if (indexPath.row < 7) {
@@ -62,28 +68,32 @@
             cell.dayLabel.text = [NSString stringWithFormat:@"%td", shiftIndex + 1];
             cell.dayLabel.textColor = dayTexTColor;
             
-            // 轉日期格式 yyyy年MM月
-            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-            dateFormatter.dateFormat = @"yyyy年MM月";
+            NSDate *yyMMDDDate = [self dateYYMMConvertToYYMMDD:sectionDate withDay:shiftIndex + 1];
+            BOOL isOnRangeDate = [NSCalendar isOnRangeFromDate:self.selectFromDate toDate:self.selectToDate date:yyMMDDDate];
             
-            NSString *dateString = [dateFormatter stringFromDate:sectionDate];
-            dateString = [NSString stringWithFormat:@"%@%02ld日", dateString, (long)shiftIndex + 1];
-            
-            dateFormatter.dateFormat = @"yyyy年MM月dd日";
-            NSDate *date = [dateFormatter dateFromString:dateString];
-            BOOL isOnRangeDate = [NSCalendar isOnRangeFromDate:self.selectFromDate toDate:self.selectToDate date:date];
             if (isOnRangeDate) {
-                cell.backgroundColor = [UIColor redColor];
+                cell.dayLabel.textColor = [UIColor whiteColor];
+                [self recordGradientInfo:yyMMDDDate frame:cell.frame];
             }
             
-            if ([[dateFormatter stringFromDate:self.selectFromDate] isEqualToString:[dateFormatter stringFromDate:date]] ||
-                [[dateFormatter stringFromDate:self.selectToDate] isEqualToString:[dateFormatter stringFromDate:date]]) {
-                cell.backgroundColor = [UIColor redColor];
+            NSString *selectFromDateString = [self yyMMDDStringConvertFromDate:self.selectFromDate];
+            NSString *selectToDateString = [self yyMMDDStringConvertFromDate:self.selectToDate];
+            NSString *yyMMDDDateString = [self yyMMDDStringConvertFromDate:yyMMDDDate];
+            if ([selectFromDateString isEqualToString:yyMMDDDateString]) {
+                cell.dayLabel.textColor = [UIColor whiteColor];
+                cell.isFromDate = YES;
+                [self recordGradientInfo:yyMMDDDate frame:cell.frame];
+            }
+            
+            if ([selectToDateString isEqualToString:yyMMDDDateString]) {
+                cell.dayLabel.textColor = [UIColor whiteColor];
+                cell.isToDate = YES;
+                [self recordGradientInfo:yyMMDDDate frame:cell.frame];
             }
             
             // 選擇第一個日期，則把大於 rangeDays 的日期關閉
             if (self.selectFromDate && !self.selectToDate) {
-                NSInteger days = [NSCalendar daysFromDate:self.selectFromDate toDate:date];
+                NSInteger days = [NSCalendar daysFromDate:self.selectFromDate toDate:yyMMDDDate];
                 if (labs(days) > self.rangeDays) {
                     cell.dayLabel.textColor = dayOutTexTColor;
                 }
@@ -136,8 +146,7 @@
     NSDate *sectionDate = [NSCalendar date:fromDate addMonth:indexPath.section];
     
     // 包含前一個月天數
-    NSInteger sectionDateWeek = [NSCalendar weekFromDate:sectionDate];
-    NSInteger containPreDays = (sectionDateWeek == 6) ? 0 : sectionDateWeek;
+    NSInteger containPreDays = [NSCalendar weekFromMonthFirstDate:sectionDate];
     
     NSInteger shiftIndex = indexPath.row - 7;
     // 項目 一、二 ... 日以外的點擊
@@ -154,41 +163,34 @@
                 return;
             }
         }
-        
-        // 轉日期格式 yyyy年MM月
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.dateFormat = @"yyyy年MM月";
-        
-        // 轉日期格式 yyyy年MM月dd日
-        NSString *dateString = [dateFormatter stringFromDate:sectionDate];
-        dateString = [NSString stringWithFormat:@"%@%02ld日", dateString, (long)shiftIndex + 1];
-        
+
+        NSDate *yyMMDDDate = [self dateYYMMConvertToYYMMDD:sectionDate withDay:shiftIndex + 1];
         if (self.selectFromDate) {
-            dateFormatter.dateFormat = @"yyyy年MM月dd日";
-            NSDate *date = [dateFormatter dateFromString:dateString];
-            
             if (self.selectToDate) {
                 // 重新選擇日期區域範圍
-                self.selectFromDate = date;
+                self.selectFromDate = yyMMDDDate;
                 self.selectToDate = nil;
+                
+                [self removeAllGTLGradientView];
             }
             else {
-                NSInteger days = [NSCalendar daysFromDate:self.selectFromDate toDate:date];
+                NSInteger days = [NSCalendar daysFromDate:self.selectFromDate toDate:yyMMDDDate];
                 if (days > 0 && days <= self.rangeDays) {
-                    self.selectToDate = date;
+                    self.selectToDate = yyMMDDDate;
                 }
                 else if (days < 0 && labs(days) <= self.rangeDays){
                     self.selectToDate = self.selectFromDate;
-                    self.selectFromDate = date;
+                    self.selectFromDate = yyMMDDDate;
                 }
                 else if (days == 0) {
                     self.selectFromDate = nil;
+                    [self removeAllGTLGradientView];
                 }
             }
         }
         else {
-            dateFormatter.dateFormat = @"yyyy年MM月dd日";
-            self.selectFromDate = [dateFormatter dateFromString:dateString];
+            self.selectFromDate = yyMMDDDate;
+            [self removeAllGTLGradientView];
         }
         [self.delegate selectFromDate:self.selectFromDate toDate:self.selectToDate];
         [self.collectionView reloadData];
@@ -200,6 +202,8 @@
 #pragma mark * init values
 
 - (void)setupInitValues {
+    self.gradientViewInfos = [[NSMutableDictionary alloc] init];
+    
     // 計算有幾個月份
     NSDate *fromDate = [self.dataSource minimumDateForGTLCalendar];
     NSDate *toDate = [self.dataSource maximumDateForGTLCalendar];
@@ -216,7 +220,7 @@
         NSInteger days = [NSCalendar daysFromDate:sectionDate];
         
         // 包含前一個月天數
-        NSInteger sectionDateWeek = [NSCalendar weekFromDate:sectionDate];
+        NSInteger sectionDateWeek = [NSCalendar weekFromMonthFirstDate:sectionDate];
         NSInteger containPreDays = (sectionDateWeek == 6) ? 0 : sectionDateWeek;
         
         // 包含前一個月天數
@@ -263,6 +267,64 @@
 
 - (NSArray *)itemStringDays {
     return @[@"一", @"二", @"三", @"四", @"五", @"六", @"日"];
+}
+
+- (GTLGradientView *)gtlGradientView:(CGPoint)point {
+    CGRect frame = CGRectMake(point.x, point.y, 30, 30);
+    GTLGradientView *gtlGradientView = [[GTLGradientView alloc] initWithFrame:frame];
+    gtlGradientView.clipsToBounds = YES;
+    gtlGradientView.layer.cornerRadius = 15;
+    return gtlGradientView;
+}
+
+- (void)removeAllGTLGradientView {
+    for (NSString *key in self.gradientViewInfos.allKeys) {
+        GTLGradientView *gtlGradientView = self.gradientViewInfos[key][@"view"];
+        [gtlGradientView removeFromSuperview];
+    }
+    [self.gradientViewInfos removeAllObjects];
+}
+
+- (NSString *)yyMMDDStringConvertFromDate:(NSDate *)date {
+    NSDateFormatter *yyMMDDDateFormatter = [[NSDateFormatter alloc] init];
+    yyMMDDDateFormatter.dateFormat = @"yyyy年MM月dd日";
+    return [yyMMDDDateFormatter stringFromDate:date];
+}
+
+- (NSDate *)dateYYMMConvertToYYMMDD:(NSDate *)date withDay:(NSInteger)day {
+    // 轉日期格式 yyyy年MM月 to yyyy年MM月DD日
+    NSDateFormatter *yyMMDateFormatter = [[NSDateFormatter alloc] init];
+    yyMMDateFormatter.dateFormat = @"yyyy年MM月";
+    NSString *yyMMString = [yyMMDateFormatter stringFromDate:date];
+    NSString *yyMMDDString = [NSString stringWithFormat:@"%@%02ld日", yyMMString, day];
+    
+    NSDateFormatter *yyMMDDDateFormatter = [[NSDateFormatter alloc] init];
+    yyMMDDDateFormatter.dateFormat = @"yyyy年MM月dd日";
+    return [yyMMDDDateFormatter dateFromString:yyMMDDString];
+}
+
+- (void)recordGradientInfo:(NSDate *)date frame:(CGRect)frame {
+    NSString *key = [NSString stringWithFormat:@"%f", CGRectGetMinY(frame)];
+    if (self.gradientViewInfos[key]) {
+        GTLGradientView *gtlGradientView = self.gradientViewInfos[key][@"view"];
+        CGRect cacheFrame = gtlGradientView.frame;
+        CGRect convertFrame = gtlGradientView.frame;
+        if (CGRectGetMinX(cacheFrame) > CGRectGetMinX(frame)) {
+            convertFrame.origin.x = CGRectGetMinX(frame);
+            convertFrame.size.width = CGRectGetMaxX(cacheFrame) - CGRectGetMinX(frame);
+            gtlGradientView.frame = convertFrame;
+        }
+        else if (CGRectGetMinX(cacheFrame) < CGRectGetMinX(frame)){
+            convertFrame.size.width = CGRectGetMaxX(frame) - CGRectGetMinX(cacheFrame);
+            gtlGradientView.frame = convertFrame;
+        }
+    }
+    else {
+        CGRect convertFrame = [self.collectionView convertRect:frame toView:self.collectionView];
+        GTLGradientView *gtlGradientView = [self gtlGradientView:convertFrame.origin];
+        [self.collectionView insertSubview:gtlGradientView atIndex:0];
+        self.gradientViewInfos[key] = @{ @"view":gtlGradientView };
+    }
 }
 
 #pragma mark - life cycle

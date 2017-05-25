@@ -22,6 +22,7 @@
 		7ED5299A1ED53CEE009B0D91 /* GTLCalendarHeaderReusableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7ED529981ED53CEE009B0D91 /* GTLCalendarHeaderReusableView.m */; };
 		7ED5299B1ED53CEE009B0D91 /* GTLCalendarHeaderReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7ED529991ED53CEE009B0D91 /* GTLCalendarHeaderReusableView.xib */; };
 		7ED529A21ED596B6009B0D91 /* NSCalendar+GTLCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 7ED529A11ED596B6009B0D91 /* NSCalendar+GTLCategory.m */; };
+		7ED529A61ED74CE9009B0D91 /* GTLGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7ED529A51ED74CE9009B0D91 /* GTLGradientView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,8 @@
 		7ED529991ED53CEE009B0D91 /* GTLCalendarHeaderReusableView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GTLCalendarHeaderReusableView.xib; sourceTree = "<group>"; };
 		7ED529A01ED596B6009B0D91 /* NSCalendar+GTLCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSCalendar+GTLCategory.h"; sourceTree = "<group>"; };
 		7ED529A11ED596B6009B0D91 /* NSCalendar+GTLCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSCalendar+GTLCategory.m"; sourceTree = "<group>"; };
+		7ED529A41ED74CE9009B0D91 /* GTLGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTLGradientView.h; sourceTree = "<group>"; };
+		7ED529A51ED74CE9009B0D91 /* GTLGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTLGradientView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,6 +176,7 @@
 			children = (
 				7EBA36CF1ED41B570063B852 /* GTLCalendarView.h */,
 				7EBA36D01ED41B570063B852 /* GTLCalendarView.m */,
+				7ED529A31ED74CD9009B0D91 /* GTLGradientView */,
 				7ED5299C1ED59652009B0D91 /* GTLCalendarCategory */,
 				7ED529901ED539B3009B0D91 /* GTLCalendarCell */,
 				7ED529961ED53CC2009B0D91 /* GTLCalendarHeaderReusableView */,
@@ -217,6 +221,15 @@
 				7ED529A11ED596B6009B0D91 /* NSCalendar+GTLCategory.m */,
 			);
 			path = GTLCalendarCategory;
+			sourceTree = "<group>";
+		};
+		7ED529A31ED74CD9009B0D91 /* GTLGradientView */ = {
+			isa = PBXGroup;
+			children = (
+				7ED529A41ED74CE9009B0D91 /* GTLGradientView.h */,
+				7ED529A51ED74CE9009B0D91 /* GTLGradientView.m */,
+			);
+			path = GTLGradientView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -357,6 +370,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7ED529A61ED74CE9009B0D91 /* GTLGradientView.m in Sources */,
 				7EBA36CC1ED419CB0063B852 /* ViewController.m in Sources */,
 				7ED5299A1ED53CEE009B0D91 /* GTLCalendarHeaderReusableView.m in Sources */,
 				7EBA36DF1ED435670063B852 /* GTLCalendarCollectionViewFlowLayout.m in Sources */,

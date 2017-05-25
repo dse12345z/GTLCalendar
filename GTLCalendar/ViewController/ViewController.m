@@ -8,7 +8,6 @@
 
 #import "ViewController.h"
 #import "GTLCalendarView.h"
-#import "NSCalendar+GTLCategory.h"
 
 @interface ViewController () <GTLCalendarViewDataSource, GTLCalendarViewDelegate>
 
@@ -33,7 +32,7 @@
 - (void)selectFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.dateFormat = @"yyyy-MM-dd";
-    NSLog(@"fromDate: %@, toDate: %@", [dateFormatter stringFromDate:fromDate], [dateFormatter stringFromDate:toDate]);
+//    NSLog(@"fromDate: %@, toDate: %@", [dateFormatter stringFromDate:fromDate], [dateFormatter stringFromDate:toDate]);
 }
 
 #pragma mark - private instance method

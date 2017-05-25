@@ -42,6 +42,13 @@
 }
 
 + (NSInteger)weekFromDate:(NSDate *)fromDate {
+    NSCalendarUnit calendarUnit = NSCalendarUnitWeekday;
+    NSDateComponents *dateComponents = [[NSCalendar currentCalendar] components:calendarUnit fromDate:fromDate];
+    NSArray *weeks = @[@0, @6, @0, @1, @2, @3, @4, @5];
+    return [weeks[dateComponents.weekday] integerValue];
+}
+
++ (NSInteger)weekFromMonthFirstDate:(NSDate *)fromDate {
     NSCalendarUnit calendarUnit = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
     NSDateComponents *dateComponents = [[NSCalendar currentCalendar] components:calendarUnit fromDate:fromDate];
     dateComponents.day = 1;
@@ -54,9 +61,9 @@
 }
 
 + (NSInteger)numberOfDaysWithFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate{
-    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    NSDateComponents *components = [calendar components:NSCalendarUnitDay fromDate:fromDate toDate:toDate options:NSCalendarWrapComponents];
-    return components.day;
+    NSCalendarUnit calendarUnit = NSCalendarUnitDay;
+    NSDateComponents *dateComponents = [[NSCalendar currentCalendar] components:calendarUnit fromDate:fromDate toDate:toDate options:NSCalendarWrapComponents];
+    return dateComponents.day;
 }
 
 + (BOOL)isOnRangeFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate date:(NSDate *)date {
