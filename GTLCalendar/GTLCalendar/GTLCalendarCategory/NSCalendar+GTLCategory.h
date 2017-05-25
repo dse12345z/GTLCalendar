@@ -21,6 +21,11 @@
 + (NSInteger)daysFromDate:(NSDate *)fromDate;
 
 /**
+ * 計算兩個日期之間的天數
+ */
++ (NSInteger)daysFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate;
+
+/**
  * 計算兩個日期總共有幾個月
  */
 + (NSInteger)monthsFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate;

@@ -8,8 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger, ShapeLayerType) {
+    ShapeLayerTypeNon,
+    ShapeLayerTypeLeft,
+    ShapeLayerTypeCenter,
+    ShapeLayerTypeRight
+};
+
 @interface GTLCalendarCell : UICollectionViewCell
 
 @property (weak, nonatomic) IBOutlet UILabel *dayLabel;
+
+@property (assign, nonatomic) ShapeLayerType shapeLayerType;
 
 @end

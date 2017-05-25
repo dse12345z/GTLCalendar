@@ -20,6 +20,8 @@
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) NSMutableArray *sectionRows;
+@property (strong, nonatomic) NSDate *selectFromDate;
+@property (strong, nonatomic) NSDate *selectToDate;
 @property (assign, nonatomic) NSInteger months;
 
 @end
@@ -27,6 +29,10 @@
 @implementation GTLCalendarView
 
 #pragma mark - UICollectionViewDataSource
+
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    return self.months;
+}
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return [self.sectionRows[section] integerValue];
@@ -95,8 +101,67 @@
 
 #pragma mark - UICollectionViewDelegate
 
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return self.months;
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    // 依照 section index 計算日期
+    NSDate *fromDate = [self.dataSource minimumDateForGTLCalendar];
+    NSDate *sectionDate = [NSCalendar date:fromDate addMonth:indexPath.section];
+    
+    // 包含前一個月天數
+    NSInteger sectionDateWeek = [NSCalendar weekFromDate:sectionDate];
+    NSInteger containPreDays = (sectionDateWeek == 6) ? 0 : sectionDateWeek;
+    
+    NSInteger shiftIndex = indexPath.row - 7;
+    // 項目 一、二 ... 日以外的點擊
+    if (shiftIndex >= containPreDays) {
+        shiftIndex -= containPreDays;
+        
+        // 判斷是否點超過當天日期
+        if (indexPath.section == self.sectionRows.count - 1) {
+            NSDate *toDate = [self.dataSource maximumDateForGTLCalendar];
+            NSInteger day = [NSCalendar dayFromDate:toDate];
+            
+            // 超過最大日期的日數
+            if (shiftIndex + 1 > day) {
+                return;
+            }
+        }
+        
+        // 轉日期格式 yyyy年MM月
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.dateFormat = @"yyyy年MM月";
+        
+        NSString *dateString = [dateFormatter stringFromDate:sectionDate];
+        dateString = [NSString stringWithFormat:@"%@%02ld日", dateString, (long)shiftIndex + 1];
+        
+        if (self.selectFromDate) {
+            dateFormatter.dateFormat = @"yyyy年MM月dd日";
+            NSDate *date = [dateFormatter dateFromString:dateString];
+            
+            if (self.selectToDate) {
+                // 重新選擇日期區域範圍
+                self.selectFromDate = date;
+                self.selectToDate = nil;
+            }
+            else {
+                NSInteger days = [NSCalendar daysFromDate:self.selectFromDate toDate:date];
+                if (days > 0 && days <= self.rangeDays) {
+                    self.selectToDate = date;
+                }
+                else if (days < 0 && labs(days) <= self.rangeDays){
+                    self.selectToDate = self.selectFromDate;
+                    self.selectFromDate = date;
+                }
+                else {
+                    // 超過選取範圍或是起始與結束都在同一天
+                }
+            }
+        }
+        else {
+            dateFormatter.dateFormat = @"yyyy年MM月dd日";
+            self.selectFromDate = [dateFormatter dateFromString:dateString];
+        }
+        [self.delegate selectFromDate:self.selectFromDate toDate:self.selectToDate];
+    }
 }
 
 #pragma mark - private instance method

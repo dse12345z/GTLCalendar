@@ -28,6 +28,14 @@
     return [NSDate new];
 }
 
+#pragma mark - GTLCalendarViewDelegate
+
+- (void)selectFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateFormat = @"yyyy-MM-dd";
+    NSLog(@"fromDate: %@, toDate: %@", [dateFormatter stringFromDate:fromDate], [dateFormatter stringFromDate:toDate]);
+}
+
 #pragma mark - private instance method
 
 #pragma mark * init values
@@ -40,6 +48,7 @@
     GTLCalendarView *gtlCalendarView = [[GTLCalendarView alloc] initWithFrame:frame];
     gtlCalendarView.dataSource = self;
     gtlCalendarView.delegate = self;
+    gtlCalendarView.rangeDays = 30;
     [self.view addSubview:gtlCalendarView];
 }
 

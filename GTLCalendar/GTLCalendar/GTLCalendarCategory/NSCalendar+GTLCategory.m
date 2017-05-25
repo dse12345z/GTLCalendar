@@ -23,6 +23,12 @@
     return rangeDays.length;
 }
 
++ (NSInteger)daysFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate {
+    NSCalendarUnit calendarUnit = NSCalendarUnitDay;
+    NSDateComponents *dateComponents = [[NSCalendar currentCalendar] components:calendarUnit fromDate:fromDate toDate:toDate options:NSCalendarWrapComponents];
+    return dateComponents.day;
+}
+
 + (NSInteger)monthsFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate {
     NSCalendarUnit calendarUnit = NSCalendarUnitMonth;
     NSDateComponents *dateComponents = [[NSCalendar currentCalendar] components:calendarUnit fromDate:fromDate toDate:toDate options:0];
@@ -36,12 +42,10 @@
 }
 
 + (NSInteger)weekFromDate:(NSDate *)fromDate {
-    // 公曆 NSCalendarIdentifierGregorian
-    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSCalendarUnit calendarUnit = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
-    NSDateComponents *dateComponents = [gregorian components:calendarUnit fromDate:fromDate];
+    NSDateComponents *dateComponents = [[NSCalendar currentCalendar] components:calendarUnit fromDate:fromDate];
     dateComponents.day = 1;
-    NSDate *firstDayOfMonthDate = [gregorian dateFromComponents:dateComponents];
+    NSDate *firstDayOfMonthDate = [[NSCalendar currentCalendar] dateFromComponents:dateComponents];
     
     NSCalendarUnit calendarUnit2 = NSCalendarUnitWeekday;
     NSDateComponents *dateComponents2 = [[NSCalendar currentCalendar] components:calendarUnit2 fromDate:firstDayOfMonthDate];
