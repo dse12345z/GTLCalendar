@@ -16,10 +16,11 @@
 
 @implementation GTLCalendarCollectionViewFlowLayout
 
-#pragma mark - method to override
+#pragma mark - private instance method
 
-- (void)prepareLayout {
-    [super prepareLayout];
+#pragma mark * caculate
+
+- (void)caculateContentSizeHeight {
     NSInteger rowCount = 0;
     NSInteger lineSpacingCount = 0;
     for (NSNumber *rows in self.sectionRows) {
@@ -31,26 +32,21 @@
     self.height = (rowCount * 30) + (numberOfSections * 50) + (self.minimumLineSpacing * lineSpacingCount);
 }
 
+#pragma mark - override
+
 - (void)setSectionInset:(UIEdgeInsets)sectionInset {
     [super setSectionInset:sectionInset];
     self.minimumInteritemSpacing = sectionInset.left;
 }
 
-#pragma mark - life cycle
-
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        self.scrollDirection = UICollectionViewScrollDirectionVertical;
-        self.minimumLineSpacing = 12;
-        self.headerReferenceSize = CGSizeMake(50, 50);
-    }
-    return self;
-}
-
 - (CGSize)collectionViewContentSize {
     CGFloat collectionViewWidth = CGRectGetWidth(self.collectionView.frame);
     return CGSizeMake(collectionViewWidth, self.height);
+}
+
+- (void)prepareLayout {
+    [super prepareLayout];
+    [self caculateContentSizeHeight];
 }
 
 @end

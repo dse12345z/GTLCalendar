@@ -44,7 +44,7 @@
     
     // 一、二、三 ... 日，7 個項目
     if (indexPath.row < 7) {
-        cell.dayLabel.text = [self itemDays][indexPath.row];
+        cell.dayLabel.text = [self itemStringDays][indexPath.row];
         cell.dayLabel.textColor = itemTexTColor;
     }
     else {
@@ -76,16 +76,18 @@
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
     if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
-        // 計算有幾個月份
         NSDate *fromDate = [self.dataSource minimumDateForGTLCalendar];
+        
+        // 計算開始日期加上 x 數字後的日期
         NSDate *sectionDate = [NSCalendar date:fromDate addMonth:indexPath.section];
         
+        // 轉日期格式 yyyy年MM月
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         dateFormatter.dateFormat = @"yyyy年MM月";
         NSString *dateString = [dateFormatter stringFromDate:sectionDate];
+        
         GTLCalendarHeaderReusableView *gtlCalendarHeaderReusableView = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"GTLCalendarHeaderReusableView" forIndexPath:indexPath];
         gtlCalendarHeaderReusableView.dateLabel.text = dateString;
-        
         return gtlCalendarHeaderReusableView;
     }
     return nil;
@@ -129,20 +131,27 @@
 }
 
 - (void)setupCollectionViews {
-    CGFloat calendarWidth = CGRectGetWidth(self.frame);
-    CGFloat calendarHeight = CGRectGetHeight(self.frame);
-    CGRect frame = CGRectMake(0, 0, calendarWidth, calendarHeight);
+    CGFloat calendarViewWidth = CGRectGetWidth(self.frame);
+    CGFloat calendarViewHeight = CGRectGetHeight(self.frame);
+    CGRect collectionViewFrame = CGRectMake(0, 0, calendarViewWidth, calendarViewHeight);
     
-    CGFloat itemWidth = 30;
-    CGFloat collectionViewWidth = CGRectGetWidth(frame);
-    CGFloat space = (collectionViewWidth - (7 * itemWidth)) / 8;
+    CGFloat items = 7;              // 一、二 ... 日
+    CGFloat itemWidth = 30;         // 項目寬
+    CGFloat interitem = items + 1;  // 項目間距數量
+    CGFloat collectionViewWidth = CGRectGetWidth(collectionViewFrame);
+    CGFloat space = (collectionViewWidth - (items * itemWidth)) / interitem;
+    CGFloat headerWidth = calendarViewWidth;
     
     GTLCalendarCollectionViewFlowLayout *flowLayout = [[GTLCalendarCollectionViewFlowLayout alloc] init];
+    flowLayout.minimumLineSpacing = 12;
     flowLayout.itemSize = CGSizeMake(itemWidth, itemWidth);
+    flowLayout.headerReferenceSize = CGSizeMake(headerWidth, 50);
     flowLayout.sectionInset = UIEdgeInsetsMake(0, space, 0, space);
+    flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     flowLayout.sectionRows = self.sectionRows;
-
-    self.collectionView = [[UICollectionView alloc] initWithFrame:frame collectionViewLayout:flowLayout];
+    
+    
+    self.collectionView = [[UICollectionView alloc] initWithFrame:collectionViewFrame collectionViewLayout:flowLayout];
     self.collectionView.dataSource = self;
     self.collectionView.delegate = self;
     self.collectionView.backgroundColor = [UIColor clearColor];
@@ -153,7 +162,7 @@
 
 #pragma mark * misc
 
-- (NSArray *)itemDays {
+- (NSArray *)itemStringDays {
     return @[@"一", @"二", @"三", @"四", @"五", @"六", @"日"];
 }
 
