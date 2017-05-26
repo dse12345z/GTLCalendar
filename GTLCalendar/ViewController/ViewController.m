@@ -20,7 +20,7 @@
 - (NSDate *)minimumDateForGTLCalendar {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.dateFormat = @"yyyy-MM-dd";
-    return [dateFormatter dateFromString:@"2015-01-01"];
+    return [dateFormatter dateFromString:@"2015-05-01"];
 }
 
 - (NSDate *)maximumDateForGTLCalendar {
@@ -29,10 +29,8 @@
 
 #pragma mark - GTLCalendarViewDelegate
 
-- (void)selectFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate {
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.dateFormat = @"yyyy-MM-dd";
-//    NSLog(@"fromDate: %@, toDate: %@", [dateFormatter stringFromDate:fromDate], [dateFormatter stringFromDate:toDate]);
+- (void)selectNSStringFromDate:(NSString *)fromDate toDate:(NSString *)toDate {
+    NSLog(@"fromDate: %@, toDate: %@", fromDate, toDate);
 }
 
 #pragma mark - private instance method
@@ -40,6 +38,9 @@
 #pragma mark * init values
 
 - (void)setupGTLCalendarViews {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateFormat = @"yyyy-MM-dd";
+    
     CGFloat screenWidth = CGRectGetWidth([UIScreen mainScreen].bounds);
     CGFloat screenHeight = CGRectGetHeight([UIScreen mainScreen].bounds);
     CGRect frame = CGRectMake(0, 0, screenWidth, screenHeight);
@@ -48,6 +49,8 @@
     gtlCalendarView.dataSource = self;
     gtlCalendarView.delegate = self;
     gtlCalendarView.rangeDays = 30 * 6;
+    gtlCalendarView.selectFromDate = [dateFormatter dateFromString:@"2017-05-10"];
+    gtlCalendarView.selectToDate = [dateFormatter dateFromString:@"2017-05-26"];
     [self.view addSubview:gtlCalendarView];
 }
 

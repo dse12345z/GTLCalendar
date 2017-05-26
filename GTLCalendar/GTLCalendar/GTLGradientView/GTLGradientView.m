@@ -8,8 +8,8 @@
 
 #import "GTLGradientView.h"
 
-#define squashColor [UIColor colorWithRed:245.0/255.0 green:162.0/255.0 blue:27.0/255.0 alpha:1]
-#define dustyOrangeColor [UIColor colorWithRed:233.0/255.0 green:97.0/255.0 blue:75.0/255.0 alpha:1]
+#define squashColor [UIColor colorWithRed:245.0/255.0 green:162.0/255.0 blue:27.0/255.0 alpha:0.7]
+#define dustyOrangeColor [UIColor colorWithRed:233.0/255.0 green:97.0/255.0 blue:75.0/255.0 alpha:0.7]
 
 @interface GTLGradientView ()
 

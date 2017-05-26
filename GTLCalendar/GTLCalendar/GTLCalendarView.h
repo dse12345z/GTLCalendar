@@ -25,7 +25,8 @@
 
 #pragma mark - GTLCalendarViewDelegate
 
-- (void)selectFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate;
+- (void)selectNSDateFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate;
+- (void)selectNSStringFromDate:(NSString *)fromDate toDate:(NSString *)toDate;
 
 @end
 
@@ -34,6 +35,9 @@
 @property (weak, nonatomic) id<GTLCalendarViewDataSource> dataSource;
 @property (weak, nonatomic) id<GTLCalendarViewDelegate> delegate;
 
+@property (strong, nonatomic) NSDate *selectFromDate;
+@property (strong, nonatomic) NSDate *selectToDate;
+@property (strong, nonatomic) NSString *selectedDateFormat;
 @property (assign, nonatomic) NSInteger rangeDays;
 
 @end

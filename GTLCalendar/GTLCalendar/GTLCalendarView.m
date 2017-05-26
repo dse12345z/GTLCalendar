@@ -22,13 +22,12 @@
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) NSMutableArray *sectionRows;
 @property (strong, nonatomic) NSMutableDictionary *gradientViewInfos;
-@property (strong, nonatomic) NSDate *selectFromDate;
-@property (strong, nonatomic) NSDate *selectToDate;
 @property (assign, nonatomic) NSInteger months;
 
 @end
 
 @implementation GTLCalendarView
+@synthesize selectedDateFormat = _selectedDateFormat;
 
 #pragma mark - UICollectionViewDataSource
 
@@ -66,9 +65,15 @@
         if (shiftIndex >= containPreDays) {
             shiftIndex -= containPreDays;
             cell.dayLabel.text = [NSString stringWithFormat:@"%td", shiftIndex + 1];
-            cell.dayLabel.textColor = dayTexTColor;
             
             NSDate *yyMMDDDate = [self dateYYMMConvertToYYMMDD:sectionDate withDay:shiftIndex + 1];
+            if ([yyMMDDDate compare:fromDate] == NSOrderedAscending) {
+                cell.dayLabel.textColor = dayOutTexTColor;
+            }
+            else {
+                cell.dayLabel.textColor = dayTexTColor;
+            }
+            
             BOOL isOnRangeDate = [NSCalendar isOnRangeFromDate:self.selectFromDate toDate:self.selectToDate date:yyMMDDDate];
             
             if (isOnRangeDate) {
@@ -165,6 +170,10 @@
         }
 
         NSDate *yyMMDDDate = [self dateYYMMConvertToYYMMDD:sectionDate withDay:shiftIndex + 1];
+        if ([yyMMDDDate compare:fromDate] == NSOrderedAscending) {
+            return;
+        }
+
         if (self.selectFromDate) {
             if (self.selectToDate) {
                 // 重新選擇日期區域範圍
@@ -192,9 +201,50 @@
             self.selectFromDate = yyMMDDDate;
             [self removeAllGTLGradientView];
         }
-        [self.delegate selectFromDate:self.selectFromDate toDate:self.selectToDate];
+        
+        // delegate
+        if ([self.delegate respondsToSelector:@selector(selectNSStringFromDate:toDate:)]) {
+            NSDateFormatter *selectFormatter = [[NSDateFormatter alloc] init];
+            selectFormatter.dateFormat = self.selectedDateFormat;
+            NSString *cacheFromDate = [selectFormatter stringFromDate:self.selectFromDate];
+            NSString *cacheToDate = [selectFormatter stringFromDate:self.selectToDate];
+            
+            if (self.selectFromDate && self.selectToDate) {
+                
+                [self.delegate selectNSStringFromDate:cacheFromDate toDate:cacheToDate];
+            }
+            else if(self.selectFromDate) {
+                [self.delegate selectNSStringFromDate:cacheFromDate toDate:cacheFromDate];
+            }
+            else {
+                [self.delegate selectNSStringFromDate:@"" toDate:@""];
+            }
+        }
+        else if ([self.delegate respondsToSelector:@selector(selectNSDateFromDate:toDate:)]) {
+            if (self.selectFromDate && self.selectToDate) {
+                [self.delegate selectNSDateFromDate:self.selectFromDate toDate:self.selectToDate];
+            }
+            else if(self.selectFromDate) {
+                [self.delegate selectNSDateFromDate:self.selectFromDate toDate:self.selectFromDate];
+            }
+            else {
+                [self.delegate selectNSDateFromDate:nil toDate:nil];
+            }
+        }
+        
         [self.collectionView reloadData];
     }
+}
+
+#pragma mark - instance method
+
+#pragma mark * properties
+
+- (NSString *)selectedDateFormat {
+    if (_selectedDateFormat.length == 0) {
+        _selectedDateFormat = @"yyyy-MM-dd";
+    }
+    return _selectedDateFormat;
 }
 
 #pragma mark - private instance method
@@ -272,6 +322,7 @@
 - (GTLGradientView *)gtlGradientView:(CGPoint)point {
     CGRect frame = CGRectMake(point.x, point.y, 30, 30);
     GTLGradientView *gtlGradientView = [[GTLGradientView alloc] initWithFrame:frame];
+    gtlGradientView.alpha = 0;
     gtlGradientView.clipsToBounds = YES;
     gtlGradientView.layer.cornerRadius = 15;
     return gtlGradientView;
@@ -309,13 +360,22 @@
         GTLGradientView *gtlGradientView = self.gradientViewInfos[key][@"view"];
         CGRect cacheFrame = gtlGradientView.frame;
         CGRect convertFrame = gtlGradientView.frame;
+        
         if (CGRectGetMinX(cacheFrame) > CGRectGetMinX(frame)) {
             convertFrame.origin.x = CGRectGetMinX(frame);
             convertFrame.size.width = CGRectGetMaxX(cacheFrame) - CGRectGetMinX(frame);
-            gtlGradientView.frame = convertFrame;
         }
         else if (CGRectGetMinX(cacheFrame) < CGRectGetMinX(frame)){
             convertFrame.size.width = CGRectGetMaxX(frame) - CGRectGetMinX(cacheFrame);
+        }
+        
+        if (gtlGradientView.alpha == 0) {
+            [UIView animateWithDuration:0.5 animations: ^{
+                gtlGradientView.alpha = 1;
+                gtlGradientView.frame = convertFrame;
+            }];
+        }
+        else {
             gtlGradientView.frame = convertFrame;
         }
     }
