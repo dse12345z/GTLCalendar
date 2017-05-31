@@ -73,21 +73,6 @@
     }
 }
 
-#pragma mark * misc
-
-- (UICollectionView *)dependCollectionView {
-    UIView *findView = self.superview;
-    while (![findView isKindOfClass:[UICollectionView class]]) {
-        findView = findView.superview;
-    }
-    UICollectionView *collectionView = (UICollectionView *)findView;
-    return collectionView;
-}
-
-- (NSIndexPath *)indexPath {
-    return [[self dependCollectionView] indexPathForCell:self];
-}
-
 #pragma mark - life cycle
 
 - (id)initWithFrame:(CGRect)frame {

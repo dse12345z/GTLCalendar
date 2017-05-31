@@ -30,7 +30,13 @@
     self.gradientLayer.endPoint = CGPointMake(1, .5);        // 水平漸層
     self.gradientLayer.colors = @[(id)squashColor.CGColor, (id)dustyOrangeColor.CGColor];
     [self.layer insertSublayer:self.gradientLayer atIndex:0];
+}
 
+#pragma mark * override
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    self.gradientLayer.frame = self.bounds;
 }
 
 #pragma mark - life cycle
@@ -49,11 +55,6 @@
         [self setupInitValues];
     }
     return self;
-}
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    self.gradientLayer.frame = self.bounds;
 }
 
 @end

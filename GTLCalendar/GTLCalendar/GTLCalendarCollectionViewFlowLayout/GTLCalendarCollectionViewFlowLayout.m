@@ -32,7 +32,7 @@
     self.height = (rowCount * 30) + (numberOfSections * 50) + (self.minimumLineSpacing * lineSpacingCount);
 }
 
-#pragma mark - override
+#pragma mark * override
 
 - (void)setSectionInset:(UIEdgeInsets)sectionInset {
     [super setSectionInset:sectionInset];
