@@ -20,9 +20,6 @@
 
 @optional
 
-// 選擇範圍的天數
-- (NSInteger)rangeDaysForGTLCalendar;
-
 // 預設選擇起始日期
 - (NSDate *)defaultSelectFromDate;
 
@@ -41,6 +38,12 @@
 // 回傳所選擇的日期為 NSString 型別
 - (void)selectNSStringFromDate:(NSString *)fromDate toDate:(NSString *)toDate;
 
+// 選擇範圍的天數
+- (NSInteger)rangeDaysForGTLCalendar;
+
+// 項目寬，預設 30
+- (NSInteger)itemWidthForGTLCalendar;
+
 @end
 
 @interface GTLCalendarView : UIView
@@ -50,5 +53,10 @@
 
 // delagate 回傳的日期格式，預設格式 yyyy-MM-dd
 @property (strong, nonatomic) NSString *selectedDateFormat;
+
+// 清除所有選擇的日期
+- (void)clear;
+
+- (void)reloadData;
 
 @end

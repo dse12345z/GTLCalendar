@@ -11,5 +11,6 @@
 @interface GTLCalendarCollectionViewFlowLayout : UICollectionViewFlowLayout
 
 @property (strong, nonatomic) NSArray *sectionRows;
+@property (assign, nonatomic) NSInteger itemWidth;
 
 @end

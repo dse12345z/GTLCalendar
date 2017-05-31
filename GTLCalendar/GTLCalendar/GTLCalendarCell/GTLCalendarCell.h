@@ -12,6 +12,8 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *dayLabel;
 
+@property (assign, nonatomic) NSInteger itemWidth;
+@property (assign, nonatomic) BOOL isCurrentDate;
 @property (assign, nonatomic) BOOL isFromDate;
 @property (assign, nonatomic) BOOL isToDate;
 

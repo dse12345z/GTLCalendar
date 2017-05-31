@@ -26,11 +26,43 @@
 @property (strong, nonatomic) NSDate *selectToDate;
 @property (assign, nonatomic) NSInteger rangeDays;
 @property (assign, nonatomic) NSInteger months;
+@property (assign, nonatomic) NSInteger itemWidth;
 
 @end
 
 @implementation GTLCalendarView
 @synthesize selectedDateFormat = _selectedDateFormat;
+
+#pragma mark - instance method
+
+- (void)clear {
+    self.selectFromDate = nil;
+    self.selectToDate = nil;
+    [self removeAllGTLGradientView];
+    [self.collectionView reloadData];
+}
+
+- (void)reloadData {
+    if ([self.dataSource respondsToSelector:@selector(defaultSelectFromDate)]) {
+        self.selectFromDate = [self.dataSource defaultSelectFromDate];
+    }
+    
+    if ([self.dataSource respondsToSelector:@selector(defaultSelectToDate)]) {
+        self.selectToDate = [self.dataSource defaultSelectToDate];
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(rangeDaysForGTLCalendar)]) {
+        self.rangeDays = [self.delegate rangeDaysForGTLCalendar];
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(itemWidthForGTLCalendar)]) {
+        self.itemWidth = [self.delegate itemWidthForGTLCalendar];
+    }
+    else {
+        self.itemWidth = 30;
+    }
+    [self.collectionView reloadData];
+}
 
 #pragma mark - UICollectionViewDataSource
 
@@ -47,6 +79,8 @@
     cell.backgroundColor = [UIColor clearColor];
     cell.isFromDate = NO;
     cell.isToDate = NO;
+    cell.isCurrentDate = NO;
+    cell.itemWidth = self.itemWidth;
     
     // 依照 section index 計算日期
     NSDate *fromDate = [self.dataSource minimumDateForGTLCalendar];
@@ -75,6 +109,15 @@
             }
             else {
                 cell.dayLabel.textColor = dayTexTColor;
+            }
+            
+            NSDateFormatter *currentDateFormat = [[NSDateFormatter alloc] init];
+            currentDateFormat.dateFormat = self.selectedDateFormat;
+            NSString *currentDateString = [currentDateFormat stringFromDate:[NSDate date]];
+            
+            if ([yyMMDDDate compare:[currentDateFormat dateFromString:currentDateString]] == NSOrderedSame) {
+                cell.isCurrentDate = YES;
+                cell.dayLabel.textColor = [UIColor colorWithRed:245.0/255.0 green:162.0/255.0 blue:27.0/255.0 alpha:1];
             }
             
             BOOL isOnRangeDate = [NSCalendar isOnRangeFromDate:self.selectFromDate toDate:self.selectToDate date:yyMMDDDate];
@@ -171,12 +214,12 @@
                 return;
             }
         }
-
+        
         NSDate *yyMMDDDate = [self dateYYMMConvertToYYMMDD:sectionDate withDay:shiftIndex + 1];
         if ([yyMMDDDate compare:fromDate] == NSOrderedAscending) {
             return;
         }
-
+        
         if (self.selectFromDate) {
             if (self.selectToDate) {
                 // 重新選擇日期區域範圍
@@ -258,12 +301,22 @@
     if ([self.dataSource respondsToSelector:@selector(defaultSelectFromDate)]) {
         self.selectFromDate = [self.dataSource defaultSelectFromDate];
     }
+    
     if ([self.dataSource respondsToSelector:@selector(defaultSelectToDate)]) {
         self.selectToDate = [self.dataSource defaultSelectToDate];
     }
-    if ([self.dataSource respondsToSelector:@selector(rangeDaysForGTLCalendar)]) {
-        self.rangeDays = [self.dataSource rangeDaysForGTLCalendar];
+    
+    if ([self.delegate respondsToSelector:@selector(rangeDaysForGTLCalendar)]) {
+        self.rangeDays = [self.delegate rangeDaysForGTLCalendar];
     }
+    
+    if ([self.delegate respondsToSelector:@selector(itemWidthForGTLCalendar)]) {
+        self.itemWidth = [self.delegate itemWidthForGTLCalendar];
+    }
+    else {
+        self.itemWidth = 30;
+    }
+    
     self.gradientViewInfos = [[NSMutableDictionary alloc] init];
     
     // 計算有幾個月份
@@ -298,7 +351,7 @@
     CGRect collectionViewFrame = CGRectMake(0, 0, calendarViewWidth, calendarViewHeight);
     
     CGFloat items = 7;              // 一、二 ... 日
-    CGFloat itemWidth = 30;         // 項目寬
+    CGFloat itemWidth = self.itemWidth;         // 項目寬
     CGFloat interitem = items + 1;  // 項目間距數量
     CGFloat collectionViewWidth = CGRectGetWidth(collectionViewFrame);
     CGFloat space = (collectionViewWidth - (items * itemWidth)) / interitem;
@@ -311,11 +364,12 @@
     flowLayout.sectionInset = UIEdgeInsetsMake(0, space, 0, space);
     flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     flowLayout.sectionRows = self.sectionRows;
+    flowLayout.itemWidth = self.itemWidth;
     
     self.collectionView = [[UICollectionView alloc] initWithFrame:collectionViewFrame collectionViewLayout:flowLayout];
     self.collectionView.dataSource = self;
     self.collectionView.delegate = self;
-    self.collectionView.backgroundColor = [UIColor clearColor];
+    self.collectionView.backgroundColor = [UIColor whiteColor];
     [self.collectionView registerClass:[GTLCalendarCell class] forCellWithReuseIdentifier:@"GTLCalendarCell"];
     [self.collectionView registerClass:[GTLCalendarHeaderReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"GTLCalendarHeaderReusableView"];
     [self addSubview:self.collectionView];
@@ -332,11 +386,10 @@
 }
 
 - (GTLGradientView *)gtlGradientView:(CGPoint)point {
-    CGRect frame = CGRectMake(point.x, point.y, 30, 30);
+    CGRect frame = CGRectMake(point.x, point.y, self.itemWidth, self.itemWidth);
     GTLGradientView *gtlGradientView = [[GTLGradientView alloc] initWithFrame:frame];
-    gtlGradientView.alpha = 0;
     gtlGradientView.clipsToBounds = YES;
-    gtlGradientView.layer.cornerRadius = 15;
+    gtlGradientView.layer.cornerRadius = CGRectGetWidth(frame)/2;
     return gtlGradientView;
 }
 
@@ -381,14 +434,10 @@
             convertFrame.size.width = CGRectGetMaxX(frame) - CGRectGetMinX(cacheFrame);
         }
         
-        if (gtlGradientView.alpha == 0) {
+        if (CGRectGetWidth(cacheFrame) < CGRectGetWidth(convertFrame)) {
             [UIView animateWithDuration:0.5 animations: ^{
-                gtlGradientView.alpha = 1;
                 gtlGradientView.frame = convertFrame;
             }];
-        }
-        else {
-            gtlGradientView.frame = convertFrame;
         }
     }
     else {
