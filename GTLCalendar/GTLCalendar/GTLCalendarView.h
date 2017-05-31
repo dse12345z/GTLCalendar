@@ -12,10 +12,22 @@
 
 @required
 
-#pragma mark - GTLCalendarViewDataSource
-
+// 日曆的最小日期
 - (NSDate *)minimumDateForGTLCalendar;
+
+// 日曆的最大日期
 - (NSDate *)maximumDateForGTLCalendar;
+
+@optional
+
+// 選擇範圍的天數
+- (NSInteger)rangeDaysForGTLCalendar;
+
+// 預設選擇起始日期
+- (NSDate *)defaultSelectFromDate;
+
+// 預設選擇結束日期
+- (NSDate *)defaultSelectToDate;
 
 @end
 
@@ -23,9 +35,10 @@
 
 @optional
 
-#pragma mark - GTLCalendarViewDelegate
-
+// 回傳所選擇的日期為 NSDate 型別
 - (void)selectNSDateFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate;
+
+// 回傳所選擇的日期為 NSString 型別
 - (void)selectNSStringFromDate:(NSString *)fromDate toDate:(NSString *)toDate;
 
 @end
@@ -35,9 +48,7 @@
 @property (weak, nonatomic) id<GTLCalendarViewDataSource> dataSource;
 @property (weak, nonatomic) id<GTLCalendarViewDelegate> delegate;
 
-@property (strong, nonatomic) NSDate *selectFromDate;
-@property (strong, nonatomic) NSDate *selectToDate;
+// delagate 回傳的日期格式，預設格式 yyyy-MM-dd
 @property (strong, nonatomic) NSString *selectedDateFormat;
-@property (assign, nonatomic) NSInteger rangeDays;
 
 @end

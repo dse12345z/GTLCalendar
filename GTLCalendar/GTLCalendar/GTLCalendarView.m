@@ -22,6 +22,9 @@
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) NSMutableArray *sectionRows;
 @property (strong, nonatomic) NSMutableDictionary *gradientViewInfos;
+@property (strong, nonatomic) NSDate *selectFromDate;
+@property (strong, nonatomic) NSDate *selectToDate;
+@property (assign, nonatomic) NSInteger rangeDays;
 @property (assign, nonatomic) NSInteger months;
 
 @end
@@ -252,6 +255,15 @@
 #pragma mark * init values
 
 - (void)setupInitValues {
+    if ([self.dataSource respondsToSelector:@selector(defaultSelectFromDate)]) {
+        self.selectFromDate = [self.dataSource defaultSelectFromDate];
+    }
+    if ([self.dataSource respondsToSelector:@selector(defaultSelectToDate)]) {
+        self.selectToDate = [self.dataSource defaultSelectToDate];
+    }
+    if ([self.dataSource respondsToSelector:@selector(rangeDaysForGTLCalendar)]) {
+        self.rangeDays = [self.dataSource rangeDaysForGTLCalendar];
+    }
     self.gradientViewInfos = [[NSMutableDictionary alloc] init];
     
     // 計算有幾個月份
