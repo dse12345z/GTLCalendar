@@ -27,10 +27,6 @@
     return [NSDate new];
 }
 
-- (NSInteger)rangeDaysForGTLCalendar {
-    return 30 * 6;
-}
-
 - (NSDate *)defaultSelectFromDate {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.dateFormat = @"yyyy-MM-dd";
@@ -44,6 +40,10 @@
 }
 
 #pragma mark - GTLCalendarViewDelegate
+
+- (NSInteger)rangeDaysForGTLCalendar {
+    return 30 * 6;
+}
 
 - (void)selectNSStringFromDate:(NSString *)fromDate toDate:(NSString *)toDate {
     NSLog(@"fromDate: %@, toDate: %@", fromDate, toDate);

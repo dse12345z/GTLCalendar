@@ -31,7 +31,7 @@
 @end
 
 @implementation GTLCalendarView
-@synthesize selectedDateFormat = _selectedDateFormat;
+@synthesize formatString = _formatString;
 
 #pragma mark - instance method
 
@@ -112,7 +112,7 @@
             }
             
             NSDateFormatter *currentDateFormat = [[NSDateFormatter alloc] init];
-            currentDateFormat.dateFormat = self.selectedDateFormat;
+            currentDateFormat.dateFormat = self.formatString;
             NSString *currentDateString = [currentDateFormat stringFromDate:[NSDate date]];
             
             if ([yyMMDDDate compare:[currentDateFormat dateFromString:currentDateString]] == NSOrderedSame) {
@@ -251,7 +251,7 @@
         // delegate
         if ([self.delegate respondsToSelector:@selector(selectNSStringFromDate:toDate:)]) {
             NSDateFormatter *selectFormatter = [[NSDateFormatter alloc] init];
-            selectFormatter.dateFormat = self.selectedDateFormat;
+            selectFormatter.dateFormat = self.formatString;
             NSString *cacheFromDate = [selectFormatter stringFromDate:self.selectFromDate];
             NSString *cacheToDate = [selectFormatter stringFromDate:self.selectToDate];
             
@@ -286,11 +286,11 @@
 
 #pragma mark * properties
 
-- (NSString *)selectedDateFormat {
-    if (_selectedDateFormat.length == 0) {
-        _selectedDateFormat = @"yyyy-MM-dd";
+- (NSString *)formatString {
+    if (_formatString.length == 0) {
+        _formatString = @"yyyy-MM-dd";
     }
-    return _selectedDateFormat;
+    return _formatString;
 }
 
 #pragma mark - private instance method

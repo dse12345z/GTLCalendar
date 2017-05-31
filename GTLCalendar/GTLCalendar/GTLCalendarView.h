@@ -52,7 +52,7 @@
 @property (weak, nonatomic) id<GTLCalendarViewDelegate> delegate;
 
 // delagate 回傳的日期格式，預設格式 yyyy-MM-dd
-@property (strong, nonatomic) NSString *selectedDateFormat;
+@property (strong, nonatomic) NSString *formatString;
 
 // 清除所有選擇的日期
 - (void)clear;
