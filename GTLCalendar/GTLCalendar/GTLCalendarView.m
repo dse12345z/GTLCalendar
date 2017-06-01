@@ -145,7 +145,7 @@
             // 選擇第一個日期，則把大於 rangeDays 的日期關閉
             if (self.selectFromDate && !self.selectToDate) {
                 NSInteger days = [NSCalendar daysFromDate:self.selectFromDate toDate:yyMMDDDate];
-                if (labs(days) > self.rangeDays) {
+                if (labs(days) >= self.rangeDays) {
                     cell.dayLabel.textColor = dayOutTexTColor;
                 }
             }
@@ -230,10 +230,10 @@
             }
             else {
                 NSInteger days = [NSCalendar daysFromDate:self.selectFromDate toDate:yyMMDDDate];
-                if (days > 0 && days <= self.rangeDays) {
+                if (days > 0 && days < self.rangeDays) {
                     self.selectToDate = yyMMDDDate;
                 }
-                else if (days < 0 && labs(days) <= self.rangeDays){
+                else if (days < 0 && labs(days) < self.rangeDays){
                     self.selectToDate = self.selectFromDate;
                     self.selectFromDate = yyMMDDDate;
                 }
@@ -423,6 +423,7 @@
     NSString *key = [NSString stringWithFormat:@"%f", CGRectGetMinY(frame)];
     if (self.gradientViewInfos[key]) {
         GTLGradientView *gtlGradientView = self.gradientViewInfos[key][@"view"];
+        [self.collectionView sendSubviewToBack:gtlGradientView];
         CGRect cacheFrame = gtlGradientView.frame;
         CGRect convertFrame = gtlGradientView.frame;
         
