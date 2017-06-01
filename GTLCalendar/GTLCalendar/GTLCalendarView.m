@@ -453,7 +453,7 @@
 
 - (void)didMoveToSuperview {
     [super didMoveToSuperview];
-    if (self) {
+    if (self.superview) {
         [self setupInitValues];
         [self setupCollectionViews];
     }
