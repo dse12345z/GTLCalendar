@@ -335,8 +335,7 @@
         NSInteger days = [NSCalendar daysFromDate:sectionDate];
         
         // 包含前一個月天數
-        NSInteger sectionDateWeek = [NSCalendar weekFromMonthFirstDate:sectionDate];
-        NSInteger containPreDays = (sectionDateWeek == 6) ? 0 : sectionDateWeek;
+        NSInteger containPreDays = [NSCalendar weekFromMonthFirstDate:sectionDate];
         
         // 包含前一個月天數
         NSInteger weekItems = 7;
