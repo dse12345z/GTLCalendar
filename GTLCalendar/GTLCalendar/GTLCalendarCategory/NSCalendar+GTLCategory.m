@@ -32,7 +32,7 @@
 + (NSInteger)monthsFromDate:(NSDate *)fromDate toDate:(NSDate *)toDate {
     NSCalendarUnit calendarUnit = NSCalendarUnitMonth;
     NSDateComponents *dateComponents = [[NSCalendar currentCalendar] components:calendarUnit fromDate:fromDate toDate:toDate options:0];
-    return dateComponents.month + 1;
+    return dateComponents.month + 2;
 }
 
 + (NSDate *)date:(NSDate *)fromDate addMonth:(NSInteger)month {
