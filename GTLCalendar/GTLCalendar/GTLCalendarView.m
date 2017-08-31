@@ -216,7 +216,8 @@
         }
         
         NSDate *yyMMDDDate = [self dateYYMMConvertToYYMMDD:sectionDate withDay:shiftIndex + 1];
-        if ([yyMMDDDate compare:fromDate] == NSOrderedAscending) {
+        NSDate *yyMMDDFromDate = [self dateFormatter:fromDate];
+        if ([yyMMDDDate compare:yyMMDDFromDate] == NSOrderedAscending) {
             return;
         }
         
@@ -404,6 +405,13 @@
     NSDateFormatter *yyMMDDDateFormatter = [[NSDateFormatter alloc] init];
     yyMMDDDateFormatter.dateFormat = @"yyyy年MM月dd日";
     return [yyMMDDDateFormatter stringFromDate:date];
+}
+
+- (NSDate *)dateFormatter:(NSDate *)date {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateFormat = @"yyyy年MM月dd日";
+    NSString *dateString = [dateFormatter stringFromDate:date];
+    return [dateFormatter dateFromString:dateString];
 }
 
 - (NSDate *)dateYYMMConvertToYYMMDD:(NSDate *)date withDay:(NSInteger)day {
