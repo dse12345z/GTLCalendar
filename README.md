@@ -1,6 +1,5 @@
 # GTLCalendar
 
-![alt tag](http://www.code4app.com/data/attachment/forum/201705/31/192548hgi7dvvdtgjqztih.gif) 
 
 選取一個範圍的日曆
 
