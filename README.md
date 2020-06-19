@@ -3,9 +3,7 @@
 
 選取一個範圍的日曆
 
-![image](https://i.imgur.com/YfunjIf.gif)
-
-![image](http://i.imgur.com/fKq70uf.gif) 
+![image](https://i.imgur.com/AR7oykW.gif)
 
 Usage
 =============
