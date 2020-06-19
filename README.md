@@ -5,7 +5,7 @@
 
 ![image](https://i.imgur.com/YfunjIf.gif)
 
-![image](https://i.imgur.com/YfunjIf.gif) 
+![image](http://i.imgur.com/fKq70uf.gif) 
 
 Usage
 =============
