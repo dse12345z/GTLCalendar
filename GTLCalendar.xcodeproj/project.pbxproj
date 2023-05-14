@@ -521,7 +521,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 9DX345QG47;
-				DOCC_HOSTING_BASE_PATH = GTLCalendar;
+				DOCC_HOSTING_BASE_PATH = gtlcalendar;
 				INFOPLIST_FILE = GTLCalendar/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = tw.tyche.GTLCalendar;
@@ -534,7 +534,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 9DX345QG47;
-				DOCC_HOSTING_BASE_PATH = GTLCalendar;
+				DOCC_HOSTING_BASE_PATH = gtlcalendar;
 				INFOPLIST_FILE = GTLCalendar/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = tw.tyche.GTLCalendar;
